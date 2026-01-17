@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LARACHETv | بث مباشر</title>
+    <meta name="description" content="شاهد البث المباشر لأكثر من 5000 قناة تلفزيونية.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <style>
+        :root {
+            /* beIN Inspired Palette */
+            --bein-purple-dark: #2c0e4a;
+            --bein-purple-main: #5e2a85;
+            --bein-purple-light: #9036ac;
+            --bein-accent: #ff007c; /* Pinkish accent */
+            --bein-gradient: linear-gradient(135deg, #5e2a85 0%, #9036ac 100%);
+            --bg-dark: #120b17; /* Very dark purple/black */
+            --surface: rgba(44, 14, 74, 0.7);
+            --surface-hover: rgba(94, 42, 133, 0.8);
+            --text-main: #ffffff;
+            --text-sub: #bca0dc;
+            --card-border: 1px solid rgba(255, 255, 255, 0.1);
+            --glass: blur(10px);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --radius: 8px; /* Sharp but slightly rounded corners */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: var(--bein-purple-light) var(--bg-dark);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bein-purple-light);
+            border-radius: 4px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 10% 20%, rgba(94, 42, 133, 0.2) 0%, transparent 20%);
+            color: var(--text-main);
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Header --- */
+        header {
+            background: rgba(18, 11, 23, 0.95);
+            padding: 15px 4%;
+            display: right;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--bein-purple-main);
+            backdrop-filter: var(--glass);
+        }
+
+        .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position:center;
+        }
+
+        .logo span {
+            background: var(--text-main);
+            color: var(--bein-purple-main);
+            padding: 0 8px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .nav-container {
+            display: block;
+            align-items: right;
+            gap: 4px;
+            text-align:right;
+            justify-content:space-around;
+        }
+
+        .nav-dropdown {
+            position: center;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: #fff;
+            padding: 8px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 30px; /* Capsule shape */
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Cairo', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--bein-gradient);
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(144, 54, 172, 0.5);
+        }
+
+        .nav-content {
+            display: none;
+            position: absolute;
+            background: #1a0f24;
+            min-width: 300px;
+            max-height: 400px;
+            overflow: scroll;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            z-index: 100;
+            right: 0;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid var(--bein-purple-main);
+            padding: 5px;
+        }
+
+        .nav-dropdown:hover .nav-content {
+            display: inline;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .nav-search {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--bein-purple-main);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .nav-list a {
+            color: var(--text-sub);
+            padding: 10px 15px;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-list a:hover {
+            background: var(--bein-purple-main);
+            color: #fff;
+            padding-right: 20px;
+        }
+
+        .nav-count {
+            background: #000;
+            color: var(--bein-purple-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* --- Main Content --- */
+        main {
+            padding: 30px 4%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .player-container {
+            margin: 0 auto 50px;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(94, 42, 133, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        /* beIN style decorative line under player */
+        .player-container::after {
+            content: '';
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: var(--bein-gradient);
+        }
+
+        #videoPlayer {
+            width: 100%;
+            aspect-ratio: 16/9;
+            display: block;
+            background: #000;
+        }
+
+        /* --- Controls & Search --- */
+        .channel-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .channel-controls h2 {
+            font-size: 1.8rem;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .channel-controls h2 i {
+            color: var(--bein-purple-light);
+        }
+
+        .search-container {
+            background: rgba(0,0,0,0.4);
+            padding: 10px 25px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
+            border: 1px solid var(--bein-purple-main);
+            transition: 0.3s;
+        }
+
+        .search-container:focus-within {
+            box-shadow: 0 0 15px rgba(94, 42, 133, 0.6);
+            border-color: var(--bein-accent);
+        }
+
+        .search-container i {
+            color: var(--bein-purple-light);
+        }
+
+        #channelSearch {
+            border: none;
+            background: transparent;
+            color: #fff;
+            outline: none;
+            width: 100%;
+            font-family: 'Cairo', sans-serif;
+            font-size: 15px;
+        }
+
+        /* --- Channel Grid --- */
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+        }
+
+        .channel-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(5px);
+        }
+
+        .channel-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: var(--surface-hover);
+            border-color: var(--bein-purple-light);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(144, 54, 172, 0.2);
+        }
+
+        .channel-card img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            border-radius: 50%;
+            background: #fff;
+            padding: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+        
+        .channel-card:hover img {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .channel-card p {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+            line-height: 1.4;
+            height: 42px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .channel-card .stream-type {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--bein-gradient);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .channel-card .fav-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: rgba(255,255,255,0.3);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            font-size: 18px;
+        }
+
+        .channel-card .fav-btn:hover, .channel-card .fav-btn.active {
+            color: #ffd700;
+            transform: scale(1.2);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #0d0812;
+            padding: 60px 5%;
+            margin-top: 80px;
+            border-top: 5px solid var(--bein-purple-main);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-grid h3 {
+            color: #fff;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-grid p, .footer-grid a {
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 15px;
+            line-height: 1.8;
+            transition: 0.3s;
+        }
+
+        .footer-grid a:hover {
+            color: var(--bein-accent);
+            padding-right: 10px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .social-links a:hover {
+            background: var(--bein-gradient);
+            color: white !important;
+            border-color: transparent;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(144, 54, 172, 0.4);
+            padding-right: 0 !important;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+        }
+
+        /* --- Quick Actions --- */
+        .quick-actions {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .quick-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: var(--bein-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            font-size: 22px;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .quick-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 0 25px rgba(144, 54, 172, 0.8);
+        }
+
+        /* --- Modals --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background: #1e1329;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--bein-purple-main);
+            box-shadow: 0 0 50px rgba(94, 42, 133, 0.4);
+            color: #fff;
+        }
+
+        .modal h3 {
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--bein-accent);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile tweaks */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav-container {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .channel-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-container {
+                width: 100%;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span>Tv </span> LARACHE
+        </div>
+        
+        <div class="nav-container">
+            <div class="nav-dropdown">
+                <button class="nav-btn">
+                    <i class="fas fa-list"></i>
+                    الفئات
+                </button>
+                <div class="nav-content">
+                    <input type="text" class="nav-search" id="categorySearch" placeholder="🔍 ابحث...">
+                    <div class="nav-list" id="categoryList"></div>
+                </div>
+            </div>
+            
+            <div class="nav-dropdown">
+                <button class="nav-btn">
+                    <i class="fas fa-language"></i>
+                    اللغات
+                </button>
+                <div class="nav-content">
+                    <input type="text" class="nav-search" id="languageSearch" placeholder="🔍 ابحث...">
+                    <div class="nav-list" id="languageList"></div>
+                </div>
+            </div>
+            
+            <div class="nav-dropdown">
+                <button class="nav-btn">
+                    <i class="fas fa-flag"></i>
+                    الدول
+                </button>
+                <div class="nav-content">
+                    <input type="text" class="nav-search" id="countrySearch" placeholder="🔍 ابحث...">
+                    <div class="nav-list" id="countryList"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="player-container">
+            <video id="videoPlayer" controls autoplay poster="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjU2MCIgdmlld0JveD0iMCAwIDEwMDAgNTYwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWEwZjI0Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0MCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+U2VsZWN0IGEgQ2hhbm5lbDwvdGV4dD48L3N2Zz4="></video>
+        </div>
+
+        <div class="channel-controls">
+            <h2 id="categoryTitle">
+                <i class="fas fa-tv"></i>
+                البث المباشر
+            </h2>
+            
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="channelSearch" placeholder="ابحث عن قناة...">
+            </div>
+        </div>
+
+        <div class="channel-grid" id="channelGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-sub);">
+                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                <p style="margin-top: 20px;">جاري تحميل القنوات...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <h3>LARACHE SPORTS</h3>
+                <p>وجهتك الأولى لمشاهدة القنوات الرياضية والترفيهية. نقدم أحدث تقنيات البث المباشر بجودة عالية وتجربة مستخدم لا تضاهى.</p>
+            </div>
+            <div>
+                <h3>روابط سريعة</h3>
+                <a href="#"><i class="fas fa-shield-alt"></i> الخصوصية</a><br><br>
+                <a href="#"><i class="fas fa-file-contract"></i> الشروط</a><br><br>
+                <a href="#"><i class="fas fa-envelope"></i> اتصل بنا</a>
+            </div>
+            <div>
+                <h3>تواصل معنا</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy;  - جميع الحقوق محفوظة- عماد الدين لمراني.
+        </div>
+    </footer>
+
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-upload"></i> إضافة ملف IPTV</h3>
+            <div style="margin: 20px 0;">
+                <input type="text" id="m3uUrl" placeholder="رابط الملف (M3U URL)" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--bein-purple-light); color: #fff; border-radius: 6px;">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeModal('uploadModal')" style="padding: 10px 20px; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer;">إلغاء</button>
+                <button onclick="loadCustomPlaylist()" style="padding: 10px 20px; background: var(--bein-gradient); color: #fff; border: none; border-radius: 6px; cursor: pointer;">تحميل</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <div class="quick-btn" onclick="openModal('uploadModal')" title="رفع ملف">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <script>
+        // --- Data & Config ---
+        const CATEGORIES = {
+            "Sports": { url: "https://iptv-org.github.io/iptv/categories/sports.m3u", count: 321, icon: "fas fa-futbol" },
+            "News": { url: "https://iptv-org.github.io/iptv/categories/news.m3u", count: 866, icon: "fas fa-newspaper" },
+            "Movies": { url: "https://iptv-org.github.io/iptv/categories/movies.m3u", count: 384, icon: "fas fa-film" },
+            "Kids": { url: "https://iptv-org.github.io/iptv/categories/kids.m3u", count: 245, icon: "fas fa-child" },
+            "Music": { url: "https://iptv-org.github.io/iptv/categories/music.m3u", count: 626, icon: "fas fa-music" },
+            "Documentary": { url: "https://iptv-org.github.io/iptv/categories/documentary.m3u", count: 109, icon: "fas fa-globe" }
+        };
+
+        const LANGUAGES = {
+            "Arabic": { url: "https://iptv-org.github.io/iptv/languages/ara.m3u", count: 369 },
+            "English": { url: "https://iptv-org.github.io/iptv/languages/eng.m3u", count: 2361 },
+            "French": { url: "https://iptv-org.github.io/iptv/languages/fra.m3u", count: 498 },
+            "Spanish": { url: "https://iptv-org.github.io/iptv/languages/spa.m3u", count: 1700 }
+        };
+
+        const COUNTRIES = {
+            "Morocco": { url: "https://iptv-org.github.io/iptv/countries/ma.m3u" },
+            "Saudi Arabia": { url: "https://iptv-org.github.io/iptv/countries/sa.m3u" },
+            "Egypt": { url: "https://iptv-org.github.io/iptv/countries/eg.m3u" },
+            "Qatar": { url: "https://iptv-org.github.io/iptv/countries/qa.m3u" }
+        };
+
+        let currentChannels = [];
+        const video = document.getElementById('videoPlayer');
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initHLS();
+            populateNav('categoryList', CATEGORIES, 'category');
+            populateNav('languageList', LANGUAGES, 'language');
+            populateNav('countryList', COUNTRIES, 'country');
+            
+            // Load Sports by default for that beIN feel
+            loadCategory('Sports', CATEGORIES['Sports'].url);
+
+            // Search listener
+            document.getElementById('channelSearch').addEventListener('input', (e) => {
+                filterChannels(e.target.value);
+            });
+        });
+
+        // --- HLS Setup ---
+        function initHLS() {
+            if (Hls.isSupported()) {
+                window.hls = new Hls();
+                window.hls.attachMedia(video);
+            }
+        }
+
+        // --- Logic ---
+        function populateNav(elementId, data, type) {
+            const list = document.getElementById(elementId);
+            list.innerHTML = '';
+            for (const [key, info] of Object.entries(data)) {
+                const a = document.createElement('a');
+                a.href = '#';
+                a.innerHTML = `<span>${info.icon ? `<i class="${info.icon}"></i> ` : ''}${key}</span> ${info.count ? `<span class="nav-count">${info.count}</span>` : ''}`;
+                a.onclick = (e) => {
+                    e.preventDefault();
+                    loadCategory(key, info.url);
+                };
+                list.appendChild(a);
+            }
+        }
+
+        async function loadCategory(name, url) {
+            document.getElementById('categoryTitle').innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> تحميل ${name}...`;
+            document.getElementById('channelGrid').innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px;"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+            
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                currentChannels = parseM3U(text);
+                renderChannels(currentChannels);
+                document.getElementById('categoryTitle').innerHTML = `<i class="fas fa-tv"></i> ${name} <small>(${currentChannels.length})</small>`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('categoryTitle').innerText = 'خطأ في التحميل';
+            }
+        }
+
+        function parseM3U(data) {
+            const lines = data.split('\n');
+            const channels = [];
+            let currentChannel = {};
+
+            lines.forEach(line => {
+                line = line.trim();
+                if (line.startsWith('#EXTINF:')) {
+                    const logoMatch = line.match(/tvg-logo="([^"]*)"/);
+                    const nameParts = line.split(',');
+                    currentChannel.name = nameParts[nameParts.length - 1].trim();
+                    currentChannel.logo = logoMatch ? logoMatch[1] : 'https://via.placeholder.com/100?text=TV';
+                } else if (line.startsWith('http')) {
+                    currentChannel.url = line;
+                    channels.push({ ...currentChannel });
+                    currentChannel = {};
+                }
+            });
+            return channels;
+        }
+
+        function renderChannels(channels) {
+            const grid = document.getElementById('channelGrid');
+            grid.innerHTML = '';
+            
+            // Limit to first 100 for performance in this demo
+            channels.slice(0, 100).forEach(channel => {
+                const card = document.createElement('div');
+                card.className = 'channel-card';
+                card.innerHTML = `
+                    <span class="stream-type">LIVE</span>
+                    <span class="fav-btn"><i class="far fa-star"></i></span>
+                    <img src="${channel.logo}" loading="lazy" onerror="this.src='https://via.placeholder.com/100x100/5e2a85/ffffff?text=TV'">
+                    <p>${channel.name}</p>
+                `;
+                card.onclick = (e) => {
+                    if(!e.target.closest('.fav-btn')) playChannel(channel.url);
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        function playChannel(url) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (Hls.isSupported() && url.endsWith('.m3u8')) {
+                window.hls.loadSource(url);
+                window.hls.attachMedia(video);
+                video.play();
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.play();
+            } else {
+                video.src = url;
+                video.play();
+            }
+        }
+
+        function filterChannels(query) {
+            const filtered = currentChannels.filter(ch => ch.name.toLowerCase().includes(query.toLowerCase()));
+            renderChannels(filtered);
+        }
+
+        // Modal Functions
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function loadCustomPlaylist() {
+            const url = document.getElementById('m3uUrl').value;
+            if(url) {
+                closeModal('uploadModal');
+                loadCategory('Custom Playlist', url);
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
