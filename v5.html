@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>IPTVGet Pro | عماد الدين لمراني - تشغيل وتحميل IPTV مجاناً</title>
+    <meta name="description" content="منصة IPTVGet Pro بواسطة عماد الدين لمراني لتشغيل وتحميل قنوات IPTV العالمية m3u مجاناً. تصفح حسب الدولة واللغة مع مشغل متطور.">
+    <meta name="keywords" content="IPTV, m3u, عماد الدين لمراني, iptvget, تشغيل قنوات, تحميل iptv">
+    <meta name="author" content="عماد الدين لمراني">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "IPTVGet Pro",
+      "author": { "@type": "Person", "name": "عماد الدين لمراني" },
+      "description": "تطبيق ويب لتشغيل وتحميل ملفات IPTV m3u العالمية."
+    }
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --bg: #0b0e14; --surface: #161b22; --primary: #58a6ff; --text: #c9d1d9; --accent: #238636; }
+        [data-theme="light"] { --bg: #f0f2f5; --surface: #ffffff; --primary: #0061d5; --text: #1c1e21; }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Navbar */
+        nav { background: var(--surface); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .logo { font-size: 1.6rem; font-weight: 900; color: var(--primary); text-decoration: none; }
+        .nav-links { display: flex; gap: 15px; list-style: none; }
+        .nav-links a { color: var(--text); text-decoration: none; font-weight: 600; cursor: pointer; }
+
+        /* Search & Tabs */
+        .header-content { padding: 30px 5%; text-align: center; background: var(--surface); }
+        .search-box { max-width: 600px; margin: 20px auto; position: relative; }
+        .search-box input { width: 100%; padding: 15px 45px; border-radius: 30px; border: 2px solid var(--primary); background: var(--bg); color: var(--text); outline: none; }
+        .search-box i { position: absolute; right: 20px; top: 18px; color: var(--primary); }
+
+        .tabs { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .tab { padding: 10px 25px; border-radius: 20px; border: 1px solid var(--primary); color: var(--primary); cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .tab.active { background: var(--primary); color: white; }
+
+        /* Main Grid */
+        section { display: none; padding: 30px 5%; }
+        section.active { display: block; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: var(--surface); padding: 20px; border-radius: 15px; text-align: center; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .btn-play { background: var(--primary); color: white; }
+        .btn-down { background: var(--accent); color: white; }
+
+        /* Fixed Modal Player */
+        .modal { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; flex-direction: column; }
+        .modal-header { padding: 15px; background: #111; display: flex; justify-content: space-between; align-items: center; color: white; border-bottom: 1px solid #333; }
+        .modal-body { display: flex; flex: 1; overflow: hidden; }
+        .video-box { flex: 3; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
+        #video { width: 100%; max-height: 100%; }
+        .list-box { flex: 1; background: #0a0a0a; overflow-y: auto; min-width: 320px; border-right: 1px solid #333; }
+        .ch-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; color: #aaa; transition: 0.2s; }
+        .ch-item:hover, .ch-item.active { background: #161b22; color: var(--primary); }
+
+        /* WhatsApp & Footer */
+        .wa-btn { position: fixed; bottom: 20px; left: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 5000; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        footer { background: var(--surface); padding: 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
+        .copyright { margin-top: 10px; font-weight: bold; color: var(--primary); font-size: 1.1rem; }
+
+        @media (max-width: 900px) { .modal-body { flex-direction: column; } .list-box { height: 40%; min-width: 100%; } }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <nav>
+        <a class="logo" href="#">IPTVGET PRO</a>
+        <ul class="nav-links">
+            <li><a onclick="showSection('home')">الرئيسية</a></li>
+            <li><a onclick="showSection('about')">من نحن</a></li>
+            <li><button class="tab" onclick="toggleTheme()" style="padding:5px 15px; font-size:0.8rem;">الوضع</button></li>
+        </ul>
+    </nav>
+
+    <div class="header-content">
+        <h1>مكتبة القنوات المفتوحة</h1>
+        <p>بواسطة عماد الدين لمراني</p>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search" placeholder="ابحث عن دولة أو لغة..." onkeyup="doSearch()">
+        </div>
+        <div class="tabs">
+            <div class="tab active" id="tab-c" onclick="loadMain('countries')">🌍 الدول</div>
+            <div class="tab" id="tab-l" onclick="loadMain('languages')">🗣 اللغات</div>
+        </div>
+    </div>
+
+    <section id="home" class="active">
+        <div class="grid" id="mainGrid"></div>
+    </section>
+
+    <section id="about" style="text-align: center;">
+        <h2>حول الموقع</h2>
+        <p style="margin-top: 20px;">IPTVGet Pro هو مشروع تطويري يقدم خدمة الوصول لقنوات IPTV المجانية عالمياً.</p>
+    </section>
+
+    <div id="playerModal" class="modal">
+        <div class="modal-header">
+            <h3 id="pTitle">قائمة القنوات</h3>
+            <button onclick="closePlayer()" style="background:none; border:none; color:white; font-size:2.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="video-box"><video id="video" controls playsinline crossorigin></video></div>
+            <div class="list-box" id="sidebar"></div>
+        </div>
+    </div>
+
+    <a href="https://wa.me/212600000000" class="wa-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+    <footer>
+        <p>جميع الحقوق محفوظة لموقع IPTVGET &copy; 2026</p>
+        <div class="copyright">بواسطة عماد الدين لمراني</div>
+    </footer>
+
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <script>
+        let dataList = [];
+        let currentType = 'countries';
+        let hls = null;
+        let plyr = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            plyr = new Plyr('#video');
+            loadMain('countries');
+        });
+
+        // 1. استيراد البيانات من المصدر المباشر
+        async function loadMain(type) {
+            currentType = type;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(type === 'countries' ? 'tab-c' : 'tab-l').classList.add('active');
+            
+            const grid = document.getElementById('mainGrid');
+            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center;">جاري جلب البيانات...</p>';
+
+            try {
+                // استخدام API المباشر لـ iptv-org
+                const res = await fetch(`https://iptv-org.github.io/api/${type}.json`);
+                dataList = await res.json();
+                render(dataList);
+            } catch (e) {
+                grid.innerHTML = 'فشل الاتصال بالمصدر.';
+            }
+        }
+
+        function render(data) {
+            const grid = document.getElementById('mainGrid');
+            grid.innerHTML = data.slice(0, 100).map(item => {
+                const id = item.code || item.id;
+                const m3u = `https://iptv-org.github.io/iptv/${currentType}/${id.toLowerCase()}.m3u`;
+                return `
+                    <div class="card">
+                        <div style="font-size:3rem;">${item.code ? getFlag(id) : '📺'}</div>
+                        <h3>${item.name}</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-play" onclick="openPlayer('${m3u}', '${item.name}')">▶ تشغيل</button>
+                            <button class="btn btn-down" onclick="downloadM3U('${m3u}')">📥 تحميل</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 2. حل مشكلة جلب لائحة القنوات (استخدام بروكسي موثوق)
+        async function openPlayer(url, name) {
+            document.getElementById('playerModal').style.display = 'flex';
+            document.getElementById('pTitle').innerText = name;
+            const sidebar = document.getElementById('sidebar');
+            sidebar.innerHTML = '<p style="padding:20px;">جاري استخراج القنوات...</p>';
+
+            try {
+                // استخدام بروكسي لفك حظر CORS وقراءة الملف
+                const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                const text = await res.text();
+                const channels = parse(text);
+
+                if (channels.length === 0) throw new Error();
+
+                sidebar.innerHTML = channels.map((ch, idx) => `
+                    <div class="ch-item" onclick="startStream('${ch.url}', this)">
+                        ${idx + 1}. ${ch.name}
+                    </div>
+                `).join('');
+
+                startStream(channels[0].url, sidebar.firstChild);
+            } catch (e) {
+                sidebar.innerHTML = '<p style="padding:20px; color:red;">لا يمكن تشغيل هذه القائمة حالياً في المتصفح. يرجى تحميلها.</p>';
+            }
+        }
+
+        function startStream(url, el) {
+            const v = document.getElementById('video');
+            document.querySelectorAll('.ch-item').forEach(i => i.classList.remove('active'));
+            if(el) el.classList.add('active');
+
+            if (Hls.isSupported()) {
+                if(hls) hls.destroy();
+                hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(v);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => v.play().catch(e=>console.log(e)));
+            } else {
+                v.src = url;
+            }
+        }
+
+        function parse(data) {
+            const lines = data.split('\n');
+            const res = [];
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes('#EXTINF')) {
+                    const name = lines[i].split(',')[1]?.trim() || "قناة";
+                    const url = lines[i+1]?.trim();
+                    if (url && url.startsWith('http')) res.push({ name, url });
+                }
+            }
+            return res;
+        }
+
+        // Utilities
+        function downloadM3U(url) {
+            window.open(url, '_blank');
+        }
+
+        function getFlag(code) {
+            return code.toUpperCase().replace(/./g, c => String.fromCodePoint(c.charCodeAt(0) + 127397));
+        }
+
+        function doSearch() {
+            const val = document.getElementById('search').value.toLowerCase();
+            const filtered = dataList.filter(i => i.name.toLowerCase().includes(val));
+            render(filtered);
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function toggleTheme() {
+            const b = document.body;
+            b.setAttribute('data-theme', b.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+        }
+
+        function closePlayer() {
+            document.getElementById('playerModal').style.display = 'none';
+            if(hls) hls.destroy();
+            document.getElementById('video').pause();
+        }
+    </script>
+</body>
+</html>
